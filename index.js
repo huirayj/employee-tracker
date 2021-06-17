@@ -30,18 +30,18 @@ const choices = [
     //     name: "View All Employees By Manager",
     //     value: "VIEW_EMPLOYEES_BY_MANAGER"
     // },
-    {
-        name: "Add Department",
-        value: "ADD_DEPARTMENT"
-    },
-    {
-        name: "Add Role",
-        value: "ADD_ROLE"
-    },
     // {
-    //     name: "Add Employee",
-    //     value: "ADD_EMPLOYEE"
+    //     name: "Add Department",
+    //     value: "ADD_DEPARTMENT"
     // },
+    // {
+    //     name: "Add Role",
+    //     value: "ADD_ROLE"
+    // },
+    {
+        name: "Add Employee",
+        value: "ADD_EMPLOYEE"
+    },
     // {
     //     name: "Remove Department",
     //     value: "REMOVE_DEPARTMENT"
@@ -92,21 +92,21 @@ const init = async () => {
         }
     ]);
     switch (answer.choice) {
-        // case "VIEW_DEPARTMENTS":
-        //     viewDepartments();
-        //     break;
-        // case "VIEW_ROLES":
-        //     viewRoles();
-        //     break;
-        // case "VIEW_EMPLOYEES":
-        //     viewEmployees();
-        //     break;
-        // case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-        //     viewByDepartment();
-        //     break;
-        // case "VIEW_EMPLOYEES_BY_MANAGER":
-        //     viewByManager();
-        //     break;
+        case "VIEW_DEPARTMENTS":
+            viewDepartments();
+            break;
+        case "VIEW_ROLES":
+            viewRoles();
+            break;
+        case "VIEW_EMPLOYEES":
+            viewEmployees();
+            break;
+        case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+            viewByDepartment();
+            break;
+        case "VIEW_EMPLOYEES_BY_MANAGER":
+            viewByManager();
+            break;
         case "ADD_DEPARTMENT":
             addDepartment();
             break;
@@ -116,21 +116,21 @@ const init = async () => {
         case "ADD_EMPLOYEE":
             addEmployee();
             break;
-        // case "REMOVE_DEPARTMENT":
-        //     removeDepartment();
-        //     break;
-        // case "REMOVE_ROLE":
-        //     removeRole();
-        //     break;
-        // case "REMOVE_EMPLOYEE":
-        //     removeEmployee();
-        //     break;
-        // case "UPDATE_EMPLOYEE_ROLE":
-        //     updateRole();
-        //     break;
-        // case "UPDATE_EMPLOYEE_MANAGER":
-        //     updateManager();
-        //     break;
+        case "REMOVE_DEPARTMENT":
+            removeDepartment();
+            break;
+        case "REMOVE_ROLE":
+            removeRole();
+            break;
+        case "REMOVE_EMPLOYEE":
+            removeEmployee();
+            break;
+        case "UPDATE_EMPLOYEE_ROLE":
+            updateRole();
+            break;
+        case "UPDATE_EMPLOYEE_MANAGER":
+            updateManager();
+            break;
         default:
             process.exit();
     }
@@ -200,95 +200,79 @@ const init = async () => {
 //     });
 //     init();
 // };
-const addDepartment = async () => {
-    const newDepartment = await inquirer.prompt([
-        {
-            type: 'input',
-            message: 'Enter a new department: ',
-            name: 'department_name'
-        }
-    ]);
-
-    connection.query('INSERT INTO department SET ?',
-        newDepartment,
-        (err, res) => {
-            (err) ? console.log(err) : console.log('New department successfully added.');
-        });
-    init();
-};
-const addRole = async () => {
-    const newRole = await inquirer.prompt([
-        {
-            type: 'input',
-            message: 'Enter a new role: ',
-            name: 'title'
-        },
-        {
-            type: 'input',
-            message: 'Enter a salary: ',
-            name: 'salary'
-        },
-        {
-            type: 'input',
-            message: 'Assign a department ID: ',
-            name: 'department_id'
-        }
-    ]);
-
-    connection.query('INSERT INTO role SET ?',
-        newRole,
-        (err, res) => {
-            (err) ? console.log(err) : console.log('New role successfully added.');
-        });
-    init();
-};
-// const addEmployee = () => {
-//     const roles = connection.query('SELECT * FROM role')
-//         .map(role => ({ name: role.title, value: role.id }));
-//     const managers = connection.query('SELECT * FROM employee')
-//         .map(manager => (
-//             {
-//                 name: `${manager.first_name} ${manager.last_name}`,
-//                 value: manager.id
-//             }));
-
-//     inquirer.prompt([
+// const addDepartment = async () => {
+//     const newDepartment = await inquirer.prompt([
 //         {
 //             type: 'input',
-//             message: 'Enter a first name: ',
-//             name: 'first'
-//         },
-//         {
-//             type: 'input',
-//             message: 'Enter a last name: ',
-//             name: 'last'
-//         },
-//         {
-//             type: 'list',
-//             message: 'Select a role: ',
-//             name: 'role',
-//             choices: roles
-//         },
-//         {
-//             type: 'list',
-//             message: 'Select a manager: ',
-//             name: 'manager',
-//             choices: managers
-//         },
-//     ]).then(({ first, last, role, manager }) => {
-//         connection.query('INSERT INTO employee SET ?',
-//             {
-//                 first_name: first,
-//                 last_name: last,
-//                 role_id: role,
-//                 manager_id: manager,
-//             },
-//             (err, res) => {
-//                 (err) ? console.log(err) : console.table(res);
-//             });
-//         init();
-//     });
+//             message: 'Enter a new department: ',
+//             name: 'department_name'
+//         }
+//     ]);
+
+//     connection.query('INSERT INTO department SET ?',
+//         newDepartment,
+//         (err, res) => {
+//             (err) ? console.log(err) : console.log('New department successfully added.');
+//         });
+//     init();
 // };
+// const addRole = async () => {
+//     const newRole = await inquirer.prompt([
+//         {
+//             type: 'input',
+//             message: 'Enter a new role: ',
+//             name: 'title'
+//         },
+//         {
+//             type: 'input',
+//             message: 'Enter a salary: ',
+//             name: 'salary'
+//         },
+//         {
+//             type: 'input',
+//             message: 'Assign a department ID: ',
+//             name: 'department_id'
+//         }
+//     ]);
+
+//     connection.query('INSERT INTO role SET ?',
+//         newRole,
+//         (err, res) => {
+//             (err) ? console.log(err) : console.log('New role successfully added.');
+//         });
+//     init();
+// };
+const addEmployee = async () => {
+    const newEmployee = await inquirer.prompt([
+        {
+            type: 'input',
+            message: 'Enter a first name: ',
+            name: 'first_name'
+        },
+        {
+            type: 'input',
+            message: 'Enter a last name: ',
+            name: 'last_name'
+        },
+        {
+            type: 'input',
+            message: 'Select a role ID: ',
+            name: 'role_id'
+        },
+        {
+            type: 'input',
+            message: 'Select a manager ID: ',
+            name: 'manager_id'
+        },
+    ]);
+
+    connection.query('INSERT INTO employee SET ?',
+        newEmployee,
+        (err, res) => {
+            (err) ? console.log(err) : console.log('New employee successfully added.');
+        });
+    init();
+};
 // const removeDepartment = () => {
 //     const departments = connection.query('SELECT * FROM department');
 
