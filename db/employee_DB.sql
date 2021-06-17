@@ -14,7 +14,7 @@ CREATE TABLE role (
     department_id INT
 );
 
-CREATE TABLE employees (
+CREATE TABLE employee (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
