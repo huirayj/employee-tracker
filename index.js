@@ -22,22 +22,22 @@ const choices = [
     //     name: "View All Employees",
     //     value: "VIEW_EMPLOYEES"
     // },
-    {
-        name: "View All Employees By Department",
-        value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-    },
-    {
-        name: "View All Employees By Manager",
-        value: "VIEW_EMPLOYEES_BY_MANAGER"
-    },
     // {
-    //     name: "Add Department",
-    //     value: "ADD_DEPARTMENT"
+    //     name: "View All Employees By Department",
+    //     value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
     // },
     // {
-    //     name: "Add Role",
-    //     value: "ADD_ROLE"
+    //     name: "View All Employees By Manager",
+    //     value: "VIEW_EMPLOYEES_BY_MANAGER"
     // },
+    {
+        name: "Add Department",
+        value: "ADD_DEPARTMENT"
+    },
+    {
+        name: "Add Role",
+        value: "ADD_ROLE"
+    },
     // {
     //     name: "Add Employee",
     //     value: "ADD_EMPLOYEE"
@@ -101,21 +101,21 @@ const init = async () => {
         // case "VIEW_EMPLOYEES":
         //     viewEmployees();
         //     break;
-        case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-            viewByDeparment();
+        // case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+        //     viewByDepartment();
+        //     break;
+        // case "VIEW_EMPLOYEES_BY_MANAGER":
+        //     viewByManager();
+        //     break;
+        case "ADD_DEPARTMENT":
+            addDepartment();
             break;
-        case "VIEW_EMPLOYEES_BY_MANAGER":
-            viewByManager();
+        case "ADD_ROLE":
+            addRole();
             break;
-        // case "ADD_DEPARTMENT":
-        //     addDepartment();
-        //     break;
-        // case "ADD_ROLE":
-        //     addRole();
-        //     break;
-        // case "ADD_EMPLOYEE":
-        //     addEmployee();
-        //     break;
+        case "ADD_EMPLOYEE":
+            addEmployee();
+            break;
         // case "REMOVE_DEPARTMENT":
         //     removeDepartment();
         //     break;
@@ -155,51 +155,93 @@ const init = async () => {
 //     });
 //     init();
 // };
-const viewByDeparment = () => {
+// const viewByDepartment = () => {
 
-    connection.query('SELECT department_name FROM department', (err, res) => {
-        if (err) throw err;
-        inquirer.prompt([
-            {
-                type: 'list',
-                message: 'Select a department: ',
-                choices() {
-                    return [...res].map(({ department_name }) => department_name);
-                },
-                name: 'department_name'
-            }
-        ]).then(answer => {
-            connection.query(`${statement} WHERE department_name=?`,
-                answer,
-                (err, res) => {
-                    (err) ? console.log(err) : console.table(res);
-                });
-        });
-    });
-    init();
-};
-const viewByManager = () => {
-    connection.query('SELECT DISTINCT manager_id FROM employee', (err, res) => {
-        (err) ? console.log(err) : console.table(res);
-    });
-    init();
-};
-// const addDepartment = () => {
-//     inquirer.prompt([
-//         {
-//             type: 'input',
-//             message: 'Enter a department name: ',
-//             name: 'department'
-//         }
-//     ]).then((answer) => {
-//         connection.query('INSERT INTO department SET ?',
-//             { name: answer.department },
-//             (err, res) => {
-//                 (err) ? console.log(err) : console.table(res);
-//             });
-//         init();
+//     connection.query('SELECT department_name FROM department', (err, res) => {
+//         if (err) throw err;
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 message: 'Select a department: ',
+//                 choices() {
+//                     return [...res].map(({ department_name }) => department_name);
+//                 },
+//                 name: 'department_name'
+//             }
+//         ]).then(answer => {
+//             connection.query(`${statement} WHERE department_name=?`,
+//                 answer,
+//                 (err, res) => {
+//                     (err) ? console.log(err) : console.table(res);
+//                 });
+//         });
 //     });
+//     init();
 // };
+// const viewByManager = () => {
+//     connection.query('SELECT department_name FROM department', (err, res) => {
+//         if (err) throw err;
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 message: 'Select a department: ',
+//                 choices() {
+//                     return [...res].map(({ department_name }) => department_name);
+//                 },
+//                 name: 'department_name'
+//             }
+//         ]).then(answer => {
+//             connection.query(`${statement} WHERE employee.manager_id=?`,
+//                 answer,
+//                 (err, res) => {
+//                     (err) ? console.log(err) : console.table(res);
+//                 });
+//         });
+//     });
+//     init();
+// };
+const addDepartment = async () => {
+    const newDepartment = await inquirer.prompt([
+        {
+            type: 'input',
+            message: 'Enter a new department: ',
+            name: 'department_name'
+        }
+    ]);
+
+    connection.query('INSERT INTO department SET ?',
+        newDepartment,
+        (err, res) => {
+            (err) ? console.log(err) : console.log('New department successfully added.');
+        });
+    init();
+};
+const addRole = async () => {
+    const newRole = await inquirer.prompt([
+        {
+            type: 'input',
+            message: 'Enter a new role: ',
+            name: 'title'
+        },
+        {
+            type: 'input',
+            message: 'Enter a salary: ',
+            name: 'salary'
+        },
+        {
+            type: 'input',
+            message: 'Assign a department ID: ',
+            name: 'department_id'
+        }
+    ]);
+
+    connection.query('INSERT INTO role SET ?',
+        newRole,
+        (err, res) => {
+            (err) ? console.log(err) : console.log('New role successfully added.');
+        });
+    init();
+};
 // const addEmployee = () => {
 //     const roles = connection.query('SELECT * FROM role')
 //         .map(role => ({ name: role.title, value: role.id }));
