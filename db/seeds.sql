@@ -15,7 +15,7 @@ VALUES
    ("Engineer", 75000, 3),
    ("Accountant", 80000, 4),
    ("Sales Manager", 70000, 5),
-   ("Representative", 40000, 6);
+   ("Representative", 40000, 5);
 
 INSERT INTO employees 
     (first_name, last_name, role_id, manager_id)
