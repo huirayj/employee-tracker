@@ -42,18 +42,18 @@ const choices = [
     //     name: "Add Employee",
     //     value: "ADD_EMPLOYEE"
     // },
-    {
-        name: "Remove Department",
-        value: "REMOVE_DEPARTMENT"
-    },
+    // {
+    //     name: "Remove Department",
+    //     value: "REMOVE_DEPARTMENT"
+    // },
     // {
     //     name: "Remove Role",
     //     value: "REMOVE_ROLE"
     // },
-    // {
-    //     name: "Remove Employee",
-    //     value: "REMOVE_EMPLOYEE"
-    // },
+    {
+        name: "Remove Employee",
+        value: "REMOVE_EMPLOYEE"
+    },
     // {
     //     name: "Update Employee Role",
     //     value: "UPDATE_EMPLOYEE_ROLE"
@@ -212,7 +212,7 @@ const init = async () => {
 //     connection.query('INSERT INTO department SET ?',
 //         newDepartment,
 //         (err, res) => {
-//             (err) ? console.log(err) : console.log('New department successfully added.');
+//             (err) ? console.log(err) : console.log('\nNew department successfully added.');
 //         });
 //     init();
 // };
@@ -238,7 +238,7 @@ const init = async () => {
 //     connection.query('INSERT INTO role SET ?',
 //         newRole,
 //         (err, res) => {
-//             (err) ? console.log(err) : console.log('New role successfully added.');
+//             (err) ? console.log(err) : console.log('\nNew role successfully added.');
 //         });
 //     init();
 // };
@@ -269,78 +269,81 @@ const init = async () => {
 //     connection.query('INSERT INTO employee SET ?',
 //         newEmployee,
 //         (err, res) => {
-//             (err) ? console.log(err) : console.log('New employee successfully added.');
+//             (err) ? console.log(err) : console.log('\nNew employee successfully added.');
 //         });
 //     init();
 // };
-const removeDepartment = () => {
-
-    connection.query('SELECT department_name FROM department', (err, res) => {
+// const removeDepartment = () => {
+//     connection.query('SELECT department_name FROM department', (err, res) => {
+//         if (err) throw err;
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 message: 'Select a department to remove: ',
+//                 choices() {
+//                     return [...res].map(({ department_name }) => department_name);
+//                 },
+//                 name: 'department_name'
+//             }
+//         ]).then((answer) => {
+//             connection.query(`DELETE FROM department WHERE ?`,
+//                 answer,
+//                 (err, res) => {
+//                     (err) ? console.log(err) : console.log('\nDepartment successfully removed.');
+//                 });
+//         });
+//     });
+//     init();
+// };
+// const removeRole = () => {
+//     connection.query('SELECT title FROM role', (err, res) => {
+//         if (err) throw err;
+//         inquirer.prompt([
+//             {
+//                 type: 'list',
+//                 message: 'Select a role to remove: ',
+//                 choices() {
+//                     return [...res].map(({ title }) => title);
+//                 },
+//                 name: 'title'
+//             }
+//         ]).then((answer) => {
+//             connection.query(`DELETE FROM role WHERE ?`,
+//                 answer,
+//                 (err, res) => {
+//                     (err) ? console.log(err) : console.log('\nRole successfully removed.');
+//                 });
+//         });
+//     });
+//     init();
+// };
+const removeEmployee = () => {
+    connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
         if (err) throw err;
-        inquirer.prompt([
-            {
-                type: 'list',
-                message: 'Select a department: ',
-                choices() {
-                    return [...res].map(({ department_name }) => department_name);
-                },
-                name: 'department_name'
-            }
-        ]).then((answer) => {
-            connection.query(`DELETE FROM department WHERE ?`,
-                answer,
+        console.log(res);
+        inquirer.prompt([{
+            type: 'list',
+            message: 'Select an employee to remove: ',
+            choices() {
+                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+            },
+            name: 'employee'
+        }]).then(answer => {
+            const first_name = answer.employee.split(' ')[0];
+            const last_name = answer.employee.split(' ')[1];
+    
+            connection.query('DELETE FROM employee WHERE ? AND ?',
+                [
+                    { first_name: first_name },
+                    { last_name: last_name }
+                ],
                 (err, res) => {
-                    (err) ? console.log(err) : console.log('Department successfully removed.');
+                    (err) ? console.log(err) : console.log(`\n${answer.employee} has been let go.`);
                 });
+            init();
         });
     });
-    init();
 };
-// const removeRole = () => {
-//     const roles = connection.query('SELECT * FROM role');
-
-//     inquirer.prompt([
-//         {
-//             type: 'list',
-//             message: 'Select a role to remove: ',
-//             name: 'role',
-//             choices: roles
-//         }
-//     ]).then(answer => {
-//         connection.query('DELETE FROM role WHERE title=?',
-//             { title: role },
-//             (err, res) => {
-//                 (err) ? console.log(err) : console.table(res);
-//             });
-//         init();
-//     });
-// };
-// const removeEmployee = () => {
-//     const employee = connection.query('SELECT first_name, last_name FROM employee')
-//         .map(({ first, last }) => `${first} ${last}`);
-
-//     inquirer.prompt([
-//         {
-//             type: 'list',
-//             message: 'Select an employee to remove: ',
-//             name: 'employee',
-//             choices: employee
-//         }
-//     ]).then(answer => {
-//         const first = answer.employee.split(' ')[0];
-//         const last = answer.employee.split(' ')[1];
-
-//         connection.query('DELETE FROM employee WHERE first_name=? AND last_name=?',
-//             [
-//                 { first_name: first },
-//                 { last_name: last }
-//             ],
-//             (err, res) => {
-//                 (err) ? console.log(err) : console.table(res);
-//             });
-//         init();
-//     });
-// }
 
 // const updateRole = () => {
 //     const employee = connection.query('SELECT first_name, last_name FROM employee')
