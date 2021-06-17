@@ -18,18 +18,18 @@ const choices = [
     //     name: "View All Roles",
     //     value: "VIEW_ROLES"
     // },
+    // {
+    //     name: "View All Employees",
+    //     value: "VIEW_EMPLOYEES"
+    // },
     {
-        name: "View All Employees",
-        value: "VIEW_EMPLOYEES"
+        name: "View All Employees By Department",
+        value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
     },
-    // {
-    //     name: "View All Employees By Department",
-    //     value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-    // },
-    // {
-    //     name: "View All Employees By Manager",
-    //     value: "VIEW_EMPLOYEES_BY_MANAGER"
-    // },
+    {
+        name: "View All Employees By Manager",
+        value: "VIEW_EMPLOYEES_BY_MANAGER"
+    },
     // {
     //     name: "Add Department",
     //     value: "ADD_DEPARTMENT"
@@ -68,6 +68,20 @@ const choices = [
     // }
 ];
 
+let statement = `
+SELECT employee.id, 
+    employee.first_name, 
+    employee.last_name, 
+    role.title, 
+    department.department_name AS department,
+    role.salary, 
+    CONCAT (manager.first_name, " ", manager.last_name) AS manager
+FROM employee
+    LEFT JOIN role ON employee.role_id = role.id
+    LEFT JOIN department ON role.department_id = department.id
+    LEFT JOIN employee manager ON employee.manager_id = manager.id
+`;
+
 const init = async () => {
     const answer = await inquirer.prompt([
         {
@@ -78,142 +92,49 @@ const init = async () => {
         }
     ]);
     switch (answer.choice) {
-        case "VIEW_DEPARTMENTS":
-            viewDepartments();
-            break;
-        case "VIEW_ROLES":
-            viewRoles();
-            break;
-        case "VIEW_EMPLOYEES":
-            viewEmployees();
-            break;
+        // case "VIEW_DEPARTMENTS":
+        //     viewDepartments();
+        //     break;
+        // case "VIEW_ROLES":
+        //     viewRoles();
+        //     break;
+        // case "VIEW_EMPLOYEES":
+        //     viewEmployees();
+        //     break;
         case "VIEW_EMPLOYEES_BY_DEPARTMENT":
             viewByDeparment();
             break;
         case "VIEW_EMPLOYEES_BY_MANAGER":
             viewByManager();
             break;
-        case "ADD_DEPARTMENT":
-            addDepartment();
-            break;
-        case "ADD_ROLE":
-            addRole();
-            break;
-        case "ADD_EMPLOYEE":
-            addEmployee();
-            break;
-        case "REMOVE_DEPARTMENT":
-            removeDepartment();
-            break;
-        case "REMOVE_ROLE":
-            removeRole();
-            break;
-        case "REMOVE_EMPLOYEE":
-            removeEmployee();
-            break;
-        case "UPDATE_EMPLOYEE_ROLE":
-            updateRole();
-            break;
-        case "UPDATE_EMPLOYEE_MANAGER":
-            updateManager();
-            break;
+        // case "ADD_DEPARTMENT":
+        //     addDepartment();
+        //     break;
+        // case "ADD_ROLE":
+        //     addRole();
+        //     break;
+        // case "ADD_EMPLOYEE":
+        //     addEmployee();
+        //     break;
+        // case "REMOVE_DEPARTMENT":
+        //     removeDepartment();
+        //     break;
+        // case "REMOVE_ROLE":
+        //     removeRole();
+        //     break;
+        // case "REMOVE_EMPLOYEE":
+        //     removeEmployee();
+        //     break;
+        // case "UPDATE_EMPLOYEE_ROLE":
+        //     updateRole();
+        //     break;
+        // case "UPDATE_EMPLOYEE_MANAGER":
+        //     updateManager();
+        //     break;
         default:
             process.exit();
     }
 }
-// .then(({ choice }) => {
-//     switch (choice) {
-//         case 'Add departments, roles, and/or employee':
-//             inquirer.prompt([
-//                 {
-//                     type: 'list',
-//                     message: 'What would you like to add? ',
-//                     name: 'choice',
-//                     choices: ['Department', 'Role', 'Employee']
-//                 }
-//             ]).then(({ choice }) => {
-//                 switch (choice) {
-//                     case 'Department':
-//                         addDept();
-//                         break;
-//                     case 'Role':
-//                         addRole();
-//                         break;
-//                     case 'Employee':
-//                         addEmp();
-//                         break;
-//                 }
-//             });
-//         case 'Remove departments, roles, and/or employee':
-//             inquirer.prompt([
-//                 {
-//                     type: 'list',
-//                     message: 'What would you like to remove? ',
-//                     name: 'choice',
-//                     choices: ['Department', 'Role', 'Employee']
-//                 }
-//             ]).then(({ choice }) => {
-//                 switch (choice) {
-//                     case 'Department':
-//                         removeDept();
-//                         break;
-//                     case 'Role':
-//                         removeRole();
-//                         break;
-//                     case 'Employee':
-//                         removeEmp();
-//                         break;
-//                 }
-//             });
-//         case 'View employee':
-//             inquirer.prompt([
-//                 {
-//                     type: 'list',
-//                     message: 'How would you like to view employee by? ',
-//                     name: 'choice',
-//                     choices: ['All', 'Department', 'Role', 'Manager']
-//                 }
-//             ]).then(({ choice }) => {
-//                 switch (choice) {
-//                     case 'All':
-//                         viewAll();
-//                         break;
-//                     case 'Department':
-//                         viewByDept();
-//                         break;
-//                     case 'Role':
-//                         viewByRole();
-//                         break;
-//                     case 'Manager':
-//                         viewByManager();
-//                         break;
-//                 }
-//             });
-//         case 'Update employee information':
-//             inquirer.prompt([
-//                 {
-//                     type: 'list',
-//                     message: 'Which employee would you like to update? ',
-//                     name: 'employee',
-//                     choices: [...employeeArr]
-//                 },
-//                 {
-//                     type: 'list',
-//                     message: 'What would you like to update his/her role to? ',
-//                     name: 'role',
-//                     choices: [...roleArr]
-//                 },
-//                 {
-//                     type: 'list',
-//                     message: 'Who would you like to update his/her manager to? ',
-//                     name: 'manager',
-//                     choices: [...managerArr]
-//                 },
-//             ]).then(({ employee, role, manager }) => {
-//                 updateEmployee(employee, role, manager);
-//             });
-//     }
-// });
 
 // const viewDepartments = () => {
 //     connection.query('SELECT department_name FROM department', (err, res) => {
@@ -227,38 +148,42 @@ const init = async () => {
 //     });
 //     init();
 // };
-const viewEmployees = () => {
-    const statement = `
-        SELECT employee.id, 
-            employee.first_name, 
-            employee.last_name, 
-            role.title, 
-            department.department_name AS department,
-            role.salary, 
-            CONCAT (manager.first_name, " ", manager.last_name) AS manager
-        FROM employee
-            LEFT JOIN role ON employee.role_id = role.id
-            LEFT JOIN department ON role.department_id = department.id
-            LEFT JOIN employee manager ON employee.manager_id = manager.id
-    `;
+// const viewEmployees = () => {
 
-    connection.query(statement, (err, res) => {
+//     const query = connection.query(statement, (err, res) => {
+//         (err) ? console.log(err) : console.table(res);
+//     });
+//     init();
+// };
+const viewByDeparment = () => {
+
+    connection.query('SELECT department_name FROM department', (err, res) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Select a department: ',
+                choices() {
+                    return [...res].map(({ department_name }) => department_name);
+                },
+                name: 'department_name'
+            }
+        ]).then(answer => {
+            connection.query(`${statement} WHERE department_name=?`,
+                answer,
+                (err, res) => {
+                    (err) ? console.log(err) : console.table(res);
+                });
+        });
+    });
+    init();
+};
+const viewByManager = () => {
+    connection.query('SELECT DISTINCT manager_id FROM employee', (err, res) => {
         (err) ? console.log(err) : console.table(res);
     });
     init();
 };
-// const viewByDeparment = () => {
-//     connection.query('SELECT DISTINCT deparment_name FROM employee', (err, res) => {
-//         (err) ? console.log(err) : console.table(res);
-//     });
-//     init();
-// };
-// const viewByManager = () => {
-//     connection.query('SELECT DISTINCT manager_id FROM employee', (err, res) => {
-//         (err) ? console.log(err) : console.table(res);
-//     });
-//     init();
-// };
 // const addDepartment = () => {
 //     inquirer.prompt([
 //         {
