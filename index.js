@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const util = require('util')
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -9,6 +10,7 @@ const connection = mysql.createConnection({
     database: 'employee_DB'
 });
 
+const queryAsync = util.promisify(connection.query).bind(connection);
 const choices = [
     // {
     //     name: "View All Departments",
@@ -22,14 +24,14 @@ const choices = [
     //     name: "View All Employees",
     //     value: "VIEW_EMPLOYEES"
     // },
-    // {
-    //     name: "View All Employees By Department",
-    //     value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-    // },
-    // {
-    //     name: "View All Employees By Manager",
-    //     value: "VIEW_EMPLOYEES_BY_MANAGER"
-    // },
+    {
+        name: "View All Employees By Department",
+        value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
+    },
+    {
+        name: "View All Employees By Manager",
+        value: "VIEW_EMPLOYEES_BY_MANAGER"
+    },
     // {
     //     name: "Add Department",
     //     value: "ADD_DEPARTMENT"
@@ -54,14 +56,14 @@ const choices = [
     //     name: "Remove Employee",
     //     value: "REMOVE_EMPLOYEE"
     // },
-    {
-        name: "Update Employee Role",
-        value: "UPDATE_EMPLOYEE_ROLE"
-    },
-    {
-        name: "Update Employee Manager",
-        value: "UPDATE_EMPLOYEE_MANAGER"
-    },
+    // {
+    //     name: "Update Employee Role",
+    //     value: "UPDATE_EMPLOYEE_ROLE"
+    // },
+    // {
+    //     name: "Update Employee Manager",
+    //     value: "UPDATE_EMPLOYEE_MANAGER"
+    // },
     // {
     //     name: "Quit",
     //     value: "QUIT"
@@ -83,7 +85,6 @@ FROM employee
 `;
 
 const init = async () => {
-    console.log('\n');
     const answer = await inquirer.prompt([
         {
             type: 'list',
@@ -156,29 +157,30 @@ const init = async () => {
 //     });
 //     init();
 // };
-const viewByDepartment = () => {
+const viewByDepartment = async () => {
+    const res = await queryAsync('SELECT department_name FROM department');
 
-    connection.query('SELECT department_name FROM department', (err, res) => {
-        if (err) throw err;
-        inquirer.prompt([
-            {
-                type: 'list',
-                message: 'Select a department: ',
-                choices() {
-                    return [...res].map(({ department_name }) => department_name);
-                },
-                name: 'department_name'
-            }
-        ]).then(answer => {
-            connection.query(`${statement} WHERE ?`,
-                answer,
-                (err, res) => {
-                    (err) ? console.log(err) : console.table(res);
-                    init();
-                });
+    const answer = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select a department: ',
+            choices() {
+                return [...res].map(({ department_name }) => department_name);
+            },
+            name: 'department_name'
+        }
+    ]);
+
+    connection.query(`${statement} WHERE ?`,
+        answer,
+        (err, res) => {
+            console.log('\n');
+            (err) ? console.log(err) : console.table(res);
         });
-    });
+
+    init();
 };
+
 const viewByManager = async () => {
     const managerID = await inquirer.prompt([
         {
@@ -187,14 +189,15 @@ const viewByManager = async () => {
             name: 'manager_id'
         }
     ]);
-    console.log(managerID);
-    // connection.query(`${statement} WHERE ?`,
-    //     managerID,
-    //     (err, res) => {
-    //         (err) ? console.log(err) : console.table(res);
-    //     });
 
-    // init();
+    connection.query(`${statement} WHERE employee.?`,
+        managerID,
+        (err, res) => {
+            console.log('\n');
+            (err) ? console.log(err) : console.table(res);
+        });
+
+    init();
 };
 // const addDepartment = async () => {
 //     const newDepartment = await inquirer.prompt([
@@ -342,7 +345,7 @@ const viewByManager = async () => {
 //     });
 // };
 
-const updateRole = async () => {
+const updateRole = () => {
     // const statement = `UPDATE employee SET role_id = 2 WHERE first_name = 'Marcus' AND last_name = 'Fenix'`;
 
     connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
@@ -361,23 +364,19 @@ const updateRole = async () => {
                 message: 'Enter a new role ID: ',
                 name: 'role_id'
             }
-        ]).then(answer => {
-            const first_name = answer.employee.split(' ')[0];
-            const last_name = answer.employee.split(' ')[1];
-            const role_id = answer.role_id;
-
+        ]).then(({ employee, role_id }) => {
             connection.query('UPDATE employee SET ? WHERE ? AND ?',
                 [
                     { role_id: role_id },
-                    { first_name: first_name },
-                    { last_name: last_name }
+                    { first_name: employee.split(' ')[0] },
+                    { last_name: employee.split(' ')[1] }
                 ],
                 (err, res) => {
-                    (err) ? console.log(err) : console.log(`\n${answer.employee} now has a role ID of ${role_id}.`);
-                    init();
+                    (err) ? console.log(err) : console.log(`\n${employee} now has a role ID of ${role_id}.`);
                 });
         });
     });
+    init();
 }
 
 const updateManager = () => {
@@ -397,23 +396,19 @@ const updateManager = () => {
                 message: 'Enter a new manager ID: ',
                 name: 'manager_id'
             }
-        ]).then(answer => {
-            const first_name = answer.employee.split(' ')[0];
-            const last_name = answer.employee.split(' ')[1];
-            const manager_id = answer.manager_id;
-
+        ]).then(({ employee, manager_id }) => {
             connection.query('UPDATE employee SET ? WHERE ? AND ?',
                 [
                     { manager_id: manager_id },
-                    { first_name: first_name },
-                    { last_name: last_name }
+                    { first_name: employee.split(' ')[0] },
+                    { last_name: employee.split(' ')[1] }
                 ],
                 (err, res) => {
-                    (err) ? console.log(err) : console.log(`\n${answer.employee} now has a new manager ID of ${manager_id}.`);
-                    init();
+                    (err) ? console.log(err) : console.log(`\n${employee} now has a new manager ID of ${manager_id}.`);
                 });
         });
     });
+    init();
 }
 
 connection.connect(err => {
