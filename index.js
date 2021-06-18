@@ -24,14 +24,14 @@ const choices = [
     //     name: "View All Employees",
     //     value: "VIEW_EMPLOYEES"
     // },
-    {
-        name: "View All Employees By Department",
-        value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-    },
-    {
-        name: "View All Employees By Manager",
-        value: "VIEW_EMPLOYEES_BY_MANAGER"
-    },
+    // {
+    //     name: "View All Employees By Department",
+    //     value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
+    // },
+    // {
+    //     name: "View All Employees By Manager",
+    //     value: "VIEW_EMPLOYEES_BY_MANAGER"
+    // },
     // {
     //     name: "Add Department",
     //     value: "ADD_DEPARTMENT"
@@ -44,10 +44,10 @@ const choices = [
     //     name: "Add Employee",
     //     value: "ADD_EMPLOYEE"
     // },
-    // {
-    //     name: "Remove Department",
-    //     value: "REMOVE_DEPARTMENT"
-    // },
+    {
+        name: "Remove Department",
+        value: "REMOVE_DEPARTMENT"
+    },
     // {
     //     name: "Remove Role",
     //     value: "REMOVE_ROLE"
@@ -273,8 +273,9 @@ const viewByManager = async () => {
 //     init();
 // };
 const removeDepartment = async () => {
-    const res = connection.query('SELECT department_name FROM department');
-    const answer = inquirer.prompt([
+    const res = await queryAsync('SELECT department_name FROM department');
+    console.log(res);
+    const answer = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select a department to remove: ',
@@ -285,10 +286,10 @@ const removeDepartment = async () => {
         }
     ]);
 
-    await connection.query(`DELETE FROM department WHERE ?`,
+    connection.query(`DELETE FROM department WHERE ?`,
         answer,
         (err, res) => {
-            (err) ? console.log(err) : console.log('\nDepartment successfully removed.');
+            (err) ? console.log(err) : console.log(`\n${answer.department_name} department successfully removed.`);
         });
 
     init();
