@@ -272,28 +272,27 @@ const viewByManager = async () => {
 //         });
 //     init();
 // };
-// const removeDepartment = () => {
-//     connection.query('SELECT department_name FROM department', (err, res) => {
-//         if (err) throw err;
-//         inquirer.prompt([
-//             {
-//                 type: 'list',
-//                 message: 'Select a department to remove: ',
-//                 choices() {
-//                     return [...res].map(({ department_name }) => department_name);
-//                 },
-//                 name: 'department_name'
-//             }
-//         ]).then((answer) => {
-//             connection.query(`DELETE FROM department WHERE ?`,
-//                 answer,
-//                 (err, res) => {
-//                     (err) ? console.log(err) : console.log('\nDepartment successfully removed.');
-//                 });
-//         });
-//     });
-//     init();
-// };
+const removeDepartment = async () => {
+    const res = connection.query('SELECT department_name FROM department');
+    const answer = inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select a department to remove: ',
+            choices() {
+                return [...res].map(({ department_name }) => department_name);
+            },
+            name: 'department_name'
+        }
+    ]);
+
+    await connection.query(`DELETE FROM department WHERE ?`,
+        answer,
+        (err, res) => {
+            (err) ? console.log(err) : console.log('\nDepartment successfully removed.');
+        });
+
+    init();
+};
 // const removeRole = () => {
 //     connection.query('SELECT title FROM role', (err, res) => {
 //         if (err) throw err;
