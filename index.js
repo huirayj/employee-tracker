@@ -50,14 +50,14 @@ const choices = [
     //     name: "Remove Role",
     //     value: "REMOVE_ROLE"
     // },
-    {
-        name: "Remove Employee",
-        value: "REMOVE_EMPLOYEE"
-    },
     // {
-    //     name: "Update Employee Role",
-    //     value: "UPDATE_EMPLOYEE_ROLE"
+    //     name: "Remove Employee",
+    //     value: "REMOVE_EMPLOYEE"
     // },
+    {
+        name: "Update Employee Role",
+        value: "UPDATE_EMPLOYEE_ROLE"
+    },
     // {
     //     name: "Update Employee Manager",
     //     value: "UPDATE_EMPLOYEE_MANAGER"
@@ -317,69 +317,72 @@ const init = async () => {
 //     });
 //     init();
 // };
-const removeEmployee = () => {
+// const removeEmployee = () => {
+//     connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
+//         if (err) throw err;
+//         inquirer.prompt([
+// {
+//             type: 'list',
+//             message: 'Select an employee to remove: ',
+//             choices() {
+//                 return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+//             },
+//             name: 'employee'
+//         }
+// ]).then(answer => {
+//             const first_name = answer.employee.split(' ')[0];
+//             const last_name = answer.employee.split(' ')[1];
+
+//             connection.query('DELETE FROM employee WHERE ? AND ?',
+//                 [
+//                     { first_name: first_name },
+//                     { last_name: last_name }
+//                 ],
+//                 (err, res) => {
+//                     (err) ? console.log(err) : console.log(`\n${answer.employee} has been let go.`);
+//                 });
+//             init();
+//         });
+//     });
+// };
+
+const updateRole = async () => {
+    // const statement = `UPDATE employee SET role_id = 2 WHERE first_name = 'Marcus' AND last_name = 'Fenix'`;
+
     connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
         if (err) throw err;
-        console.log(res);
-        inquirer.prompt([{
-            type: 'list',
-            message: 'Select an employee to remove: ',
-            choices() {
-                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Select an employee to update: ',
+                choices() {
+                    return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+                },
+                name: 'employee'
             },
-            name: 'employee'
-        }]).then(answer => {
+            {
+                type: 'input',
+                message: 'Enter a role: ',
+                name: 'role_id'
+            }
+        ]).then(answer => {
             const first_name = answer.employee.split(' ')[0];
             const last_name = answer.employee.split(' ')[1];
-    
-            connection.query('DELETE FROM employee WHERE ? AND ?',
+            const role_id = answer.role_id;
+
+            connection.query('UPDATE employee SET ? WHERE ? AND ?',
                 [
+                    { role_id: role_id },
                     { first_name: first_name },
                     { last_name: last_name }
                 ],
                 (err, res) => {
-                    (err) ? console.log(err) : console.log(`\n${answer.employee} has been let go.`);
+                    (err) ? console.log(err) : console.log(`\n${answer.employee} now has a role ID of ${role_id}.`);
                 });
             init();
         });
     });
-};
-
-// const updateRole = () => {
-//     const employee = connection.query('SELECT first_name, last_name FROM employee')
-//         .map(({ first, last }) => `${first} ${last}`);
-//     const roles = connection.query('SELECT * FROM role')
-//         .map(role => ({ name: role.title, value: role.id }));
-
-//     inquirer.prompt([
-//         {
-//             type: 'list',
-//             message: 'Select an employee to update: ',
-//             name: 'employee',
-//             choices: employee
-//         },
-//         {
-//             type: 'list',
-//             message: 'Select a role: ',
-//             name: 'role',
-//             choices: roles
-//         }
-//     ]).then(answer => {
-//         const first = answer.employee.split(' ')[0];
-//         const last = answer.employee.split(' ')[1];
-
-//         connection.query('UPDATE employee SET role_id=? WHERE first_name=? AND last_name=?',
-//             [
-//                 { role_id: answer.role },
-//                 { first_name: first },
-//                 { last_name: last }
-//             ],
-//             (err, res) => {
-//                 (err) ? console.log(err) : console.table(res);
-//             });
-//         init();
-//     });
-// }
+}
 
 // const updateManager = () => {
 //     const employee = connection.query('SELECT first_name, last_name FROM employee')
