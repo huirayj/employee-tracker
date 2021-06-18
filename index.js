@@ -341,39 +341,37 @@ const init = async () => {
 //     init();
 // };
 
-// const updateRole = () => {
-//     // const statement = `UPDATE employee SET role_id = 2 WHERE first_name = 'Marcus' AND last_name = 'Fenix'`;
+const updateRole = async () => {
+    // const statement = `UPDATE employee SET role_id = 2 WHERE first_name = 'Marcus' AND last_name = 'Fenix'`;
+    const res = await queryAsync('SELECT first_name, last_name FROM employee');
+    const answer = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select an employee to update: ',
+            choices() {
+                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+            },
+            name: 'employee'
+        },
+        {
+            type: 'input',
+            message: 'Enter a new role ID: ',
+            name: 'role_id'
+        }
+    ]);
 
-//     connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
-//         if (err) throw err;
-//         inquirer.prompt([
-//             {
-//                 type: 'list',
-//                 message: 'Select an employee to update: ',
-//                 choices() {
-//                     return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
-//                 },
-//                 name: 'employee'
-//             },
-//             {
-//                 type: 'input',
-//                 message: 'Enter a new role ID: ',
-//                 name: 'role_id'
-//             }
-//         ]).then(({ employee, role_id }) => {
-//             connection.query('UPDATE employee SET ? WHERE ? AND ?',
-//                 [
-//                     { role_id: role_id },
-//                     { first_name: employee.split(' ')[0] },
-//                     { last_name: employee.split(' ')[1] }
-//                 ],
-//                 (err, res) => {
-//                     (err) ? console.log(err) : console.log(`\n${employee} now has a role ID of ${role_id}.`);
-//                 });
-//         });
-//     });
-//     init();
-// }
+    connection.query('UPDATE employee SET ? WHERE ? AND ?',
+        [
+            { role_id: answer.role_id },
+            { first_name: answer.employee.split(' ')[0] },
+            { last_name: answer.employee.split(' ')[1] }
+        ],
+        (err, res) => {
+            (err) ? console.log(err) : console.log(`\n${answer.employee} now has a role ID of ${answer.role_id}.`);
+        });
+
+    init();
+}
 
 // const updateManager = () => {
 //     connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
