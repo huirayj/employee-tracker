@@ -36,22 +36,22 @@ const choices = [
     //     name: "Add Department",
     //     value: "ADD_DEPARTMENT"
     // },
-    // {
-    //     name: "Add Role",
-    //     value: "ADD_ROLE"
-    // },
+    {
+        name: "Add Role",
+        value: "ADD_ROLE"
+    },
     // {
     //     name: "Add Employee",
     //     value: "ADD_EMPLOYEE"
     // },
-    {
-        name: "Remove Department",
-        value: "REMOVE_DEPARTMENT"
-    },
     // {
-    //     name: "Remove Role",
-    //     value: "REMOVE_ROLE"
+    //     name: "Remove Department",
+    //     value: "REMOVE_DEPARTMENT"
     // },
+    {
+        name: "Remove Role",
+        value: "REMOVE_ROLE"
+    },
     // {
     //     name: "Remove Employee",
     //     value: "REMOVE_EMPLOYEE"
@@ -157,48 +157,48 @@ const init = async () => {
 //     });
 //     init();
 // };
-const viewByDepartment = async () => {
-    const res = await queryAsync('SELECT department_name FROM department');
+// const viewByDepartment = async () => {
+//     const res = await queryAsync('SELECT department_name FROM department');
 
-    const answer = await inquirer.prompt([
-        {
-            type: 'list',
-            message: 'Select a department: ',
-            choices() {
-                return [...res].map(({ department_name }) => department_name);
-            },
-            name: 'department_name'
-        }
-    ]);
+//     const answer = await inquirer.prompt([
+//         {
+//             type: 'list',
+//             message: 'Select a department: ',
+//             choices() {
+//                 return [...res].map(({ department_name }) => department_name);
+//             },
+//             name: 'department_name'
+//         }
+//     ]);
 
-    connection.query(`${statement} WHERE ?`,
-        answer,
-        (err, res) => {
-            console.log('\n');
-            (err) ? console.log(err) : console.table(res);
-        });
+//     connection.query(`${statement} WHERE ?`,
+//         answer,
+//         (err, res) => {
+//             console.log('\n');
+//             (err) ? console.log(err) : console.table(res);
+//         });
 
-    init();
-};
+//     init();
+// };
 
-const viewByManager = async () => {
-    const managerID = await inquirer.prompt([
-        {
-            type: 'input',
-            message: 'Enter a manager ID: ',
-            name: 'manager_id'
-        }
-    ]);
+// const viewByManager = async () => {
+//     const managerID = await inquirer.prompt([
+//         {
+//             type: 'input',
+//             message: 'Enter a manager ID: ',
+//             name: 'manager_id'
+//         }
+//     ]);
 
-    connection.query(`${statement} WHERE employee.?`,
-        managerID,
-        (err, res) => {
-            console.log('\n');
-            (err) ? console.log(err) : console.table(res);
-        });
+//     connection.query(`${statement} WHERE employee.?`,
+//         managerID,
+//         (err, res) => {
+//             console.log('\n');
+//             (err) ? console.log(err) : console.table(res);
+//         });
 
-    init();
-};
+//     init();
+// };
 // const addDepartment = async () => {
 //     const newDepartment = await inquirer.prompt([
 //         {
@@ -237,7 +237,7 @@ const viewByManager = async () => {
 //     connection.query('INSERT INTO role SET ?',
 //         newRole,
 //         (err, res) => {
-//             (err) ? console.log(err) : console.log('\nNew role successfully added.');
+//             (err) ? console.log(err) : console.log(`\n${newRole.title}New role successfully added.`);
 //         });
 //     init();
 // };
@@ -272,48 +272,46 @@ const viewByManager = async () => {
 //         });
 //     init();
 // };
-const removeDepartment = async () => {
-    const res = await queryAsync('SELECT department_name FROM department');
-    console.log(res);
-    const answer = await inquirer.prompt([
-        {
-            type: 'list',
-            message: 'Select a department to remove: ',
-            choices() {
-                return [...res].map(({ department_name }) => department_name);
-            },
-            name: 'department_name'
-        }
-    ]);
+// const removeDepartment = async () => {
+//     const res = await queryAsync('SELECT department_name FROM department');
+//     const answer = await inquirer.prompt([
+//         {
+//             type: 'list',
+//             message: 'Select a department to remove: ',
+//             choices() {
+//                 return [...res].map(({ department_name }) => department_name);
+//             },
+//             name: 'department_name'
+//         }
+//     ]);
 
-    connection.query(`DELETE FROM department WHERE ?`,
-        answer,
-        (err, res) => {
-            (err) ? console.log(err) : console.log(`\n${answer.department_name} department successfully removed.`);
-        });
-
-    init();
-};
-// const removeRole = () => {
-//     connection.query('SELECT title FROM role', (err, res) => {
-//         if (err) throw err;
-//         inquirer.prompt([
-//             {
-//                 type: 'list',
-//                 message: 'Select a role to remove: ',
-//                 choices() {
-//                     return [...res].map(({ title }) => title);
-//                 },
-//                 name: 'title'
-//             }
-//         ]).then((answer) => {
-//             connection.query(`DELETE FROM role WHERE ?`,
-//                 answer,
-//                 (err, res) => {
-//                     (err) ? console.log(err) : console.log('\nRole successfully removed.');
-//                 });
+//     connection.query(`DELETE FROM department WHERE ?`,
+//         answer,
+//         (err, res) => {
+//             (err) ? console.log(err) : console.log(`\n${answer.department_name} department successfully removed.`);
 //         });
-//     });
+
+//     init();
+// };
+
+// const removeRole = async () => {
+//     const res = await queryAsync('SELECT title FROM role');
+//     const answer = await inquirer.prompt([
+//         {
+//             type: 'list',
+//             message: 'Select a role to remove: ',
+//             choices() {
+//                 return [...res].map(({ title }) => title);
+//             },
+//             name: 'title'
+//         }
+//     ]);
+
+//     connection.query(`DELETE FROM role WHERE ?`,
+//         answer,
+//         (err, res) => {
+//             (err) ? console.log(err) : console.log(`\n${answer.title} role successfully removed.`);
+//         });
 //     init();
 // };
 // const removeEmployee = () => {
