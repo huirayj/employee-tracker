@@ -234,21 +234,24 @@ const removeEmployee = async () => {
 };
 
 const updateRole = async () => {
-    const employeeChoices = (await queryAsync('SELECT id, first_name, last_name FROM employee'))
-        .map(({ id, first_name, last_name }) => `${id} ${first_name} ${last_name}`);
-    const roleChoices = (await queryAsync('SELECT id, title FROM role'))
-        .map(({ id, title }) => `${id} ${title}`);
+    const employeeData = await queryAsync('SELECT id, first_name, last_name FROM employee');
+    const roleData = await queryAsync('SELECT id, title FROM role');
     const { employee, role_id } = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select an employee to update: ',
-            choices: employeeChoices,
+            choices() {
+                return [...employeeData].map(({ id, first_name, last_name }) =>
+                    `${id} ${first_name} ${last_name}`);
+            },
             name: 'employee'
         },
         {
             type: 'list',
             message: 'Enter a new role ID: ',
-            choices: roleChoices,
+            choices() {
+                return [...roleData].map(({ id, title }) => `${id} ${title}`);
+            },
             name: 'role_id'
         }
     ]);
@@ -259,7 +262,7 @@ const updateRole = async () => {
             { id: employee.split(' ')[0] }
         ],
         (err, res) => {
-            (err) ? console.log(err) : console.log(`\n${employee} now has a role of ${role_id}.`);
+            (err) ? console.log(err) : console.log(`\n${employee} now has a role of ${role_id}.\n`);
         });
 
     init();
