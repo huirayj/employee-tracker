@@ -34,6 +34,9 @@ const init = async () => {
         case "VIEW_EMPLOYEES_BY_MANAGER":
             viewByManager();
             break;
+        case "VIEW_SALARY_TOTAL_BY_DEPARTMENT":
+            viewSalaryTotal();
+            break;
         case "ADD_DEPARTMENT":
             addDepartment();
             break;
@@ -104,7 +107,6 @@ const viewByDepartment = async () => {
         { id: department.id },
         (err, res) => {
             console.log('\n');
-            // console.log(res.length);
             (err) ? console.log(err) : (res.length) ?
                 console.table(res) : console.log(`No employees found in ${department.name}`);
         });
@@ -134,6 +136,38 @@ const viewByManager = async () => {
             (err) ? console.log(err) : console.table(res);
         });
 
+    init();
+};
+
+const viewSalaryTotal = async () => {
+    const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
+        .map(({ id, department_name }) =>
+            ({ name: department_name, value: { name: department_name, id: id } }));
+    const { department } = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select a department: ',
+            choices: dptChoices,
+            name: 'department'
+        }
+    ]);
+
+    connection.query(`${statements.salaryTotal} WHERE department.?`,
+        { id: department.id },
+        (err, res) => {
+            console.log(res);
+            console.log('\n');
+            if (err) {
+                console.log(err);
+            } else if (res.length) {
+                const total = res.map(({ rest, salary }) => salary)
+                    .reduce((acc, curr) => acc + curr);
+                    
+                console.log(`Salary total of ${department.name}: $${total}`);
+            } else {
+                console.log(`No employees found in ${department.name}`)
+            }
+        });
     init();
 };
 
