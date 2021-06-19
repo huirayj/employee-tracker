@@ -30,6 +30,7 @@ FROM employee
 
 const init = async () => {
     const answer = await inquirer.prompt(question.qnsMenu);
+
     switch (answer.choice) {
         case "VIEW_DEPARTMENTS":
             viewDepartments();
@@ -92,7 +93,7 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    const query = connection.query(statement, (err, res) => {
+    connection.query(statement, (err, res) => {
         console.log('\n');
         (err) ? console.log(err) : console.table(res);
     });
@@ -212,24 +213,20 @@ const removeRole = async () => {
 };
 
 const removeEmployee = async () => {
-    const res = await queryAsync('SELECT first_name, last_name FROM employee');
+    const res = await queryAsync('SELECT id, first_name, last_name FROM employee');
     const { employee } = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select an employee to remove: ',
             choices() {
-                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+                return [...res].map(({ id, first_name, last_name }) => `${id} ${first_name} ${last_name}`);
             },
             name: 'employee'
         }
     ]);
-    const nameArr = employee.split(' ');
 
-    connection.query('DELETE FROM employee WHERE ? AND ?',
-        [
-            { first_name: nameArr[0] },
-            { last_name: nameArr[nameArr.length - 1] }
-        ],
+    connection.query('DELETE FROM employee WHERE ?',
+        { id: employee.split(' ')[0] },
         (err, res) => {
             (err) ? console.log(err) : console.log(`\n${employee} has been let go.`);
         });
@@ -237,45 +234,45 @@ const removeEmployee = async () => {
 };
 
 const updateRole = async () => {
-    // const statement = `UPDATE employee SET role_id = 2 WHERE first_name = 'Marcus' AND last_name = 'Fenix'`;
-    const res = await queryAsync('SELECT first_name, last_name FROM employee');
-    const answer = await inquirer.prompt([
+    const employeeChoices = (await queryAsync('SELECT id, first_name, last_name FROM employee'))
+        .map(({ id, first_name, last_name }) => `${id} ${first_name} ${last_name}`);
+    const roleChoices = (await queryAsync('SELECT id, title FROM role'))
+        .map(({ id, title }) => `${id} ${title}`);
+    const { employee, role_id } = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select an employee to update: ',
-            choices() {
-                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
-            },
+            choices: employeeChoices,
             name: 'employee'
         },
         {
-            type: 'input',
+            type: 'list',
             message: 'Enter a new role ID: ',
+            choices: roleChoices,
             name: 'role_id'
         }
     ]);
 
-    connection.query('UPDATE employee SET ? WHERE ? AND ?',
+    connection.query('UPDATE employee SET ? WHERE ?',
         [
-            { role_id: answer.role_id },
-            { first_name: answer.employee.split(' ')[0] },
-            { last_name: answer.employee.split(' ')[answer.length - 1] }
+            { role_id: role_id.split(' ')[0] },
+            { id: employee.split(' ')[0] }
         ],
         (err, res) => {
-            (err) ? console.log(err) : console.log(`\n${answer.employee} now has a role ID of ${answer.role_id}.`);
+            (err) ? console.log(err) : console.log(`\n${employee} now has a role of ${role_id}.`);
         });
 
     init();
 }
 
 const updateManager = async () => {
-    const res = await queryAsync('SELECT first_name, last_name FROM employee');
+    const res = await queryAsync('SELECT id, first_name, last_name FROM employee');
     const answer = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select an employee to update: ',
             choices() {
-                return [...res].map(({ first_name, last_name }) => `${first_name} ${last_name}`);
+                return [...res].map(({ id, first_name, last_name }) => `${id} ${first_name} ${last_name}`);
             },
             name: 'employee'
         },
@@ -285,12 +282,10 @@ const updateManager = async () => {
             name: 'manager_id'
         }
     ]);
-
-    connection.query('UPDATE employee SET ? WHERE ? AND ?',
+    connection.query('UPDATE employee SET ? WHERE ?',
         [
             { manager_id: answer.manager_id },
-            { first_name: answer.employee.split(' ')[0] },
-            { last_name: answer.employee.split(' ')[1] }
+            { id: answer.employee.split(' ')[0] }
         ],
         (err, res) => {
             (err) ? console.log(err) : console.log(`\n${answer.employee} now has a new manager ID of ${answer.manager_id}.`);
