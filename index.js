@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
 
 const queryAsync = util.promisify(connection.query).bind(connection);
 
-let statement = `
+let statementAll = `
 SELECT employee.id, 
     employee.first_name, 
     employee.last_name, 
@@ -25,6 +25,13 @@ SELECT employee.id,
 FROM employee
     LEFT JOIN role ON employee.role_id = role.id
     LEFT JOIN department ON role.department_id = department.id
+    LEFT JOIN employee manager ON employee.manager_id = manager.id
+`;
+
+const statementMgr = `
+SELECT manager.id, 
+    CONCAT (manager.first_name, " ", manager.last_name) AS manager
+FROM employee
     LEFT JOIN employee manager ON employee.manager_id = manager.id
 `;
 
@@ -93,7 +100,7 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    connection.query(statement, (err, res) => {
+    connection.query(statementAll, (err, res) => {
         console.log('\n');
         (err) ? console.log(err) : console.table(res);
     });
@@ -101,20 +108,20 @@ const viewEmployees = () => {
 };
 
 const viewByDepartment = async () => {
-    const res = await queryAsync('SELECT department_name FROM department');
-    const selectedDepartment = await inquirer.prompt([
+    const dptChoices = await queryAsync('SELECT department_name FROM department');
+    const selectedDpt = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select a department: ',
             async choices() {
-                return [...res].map(({ department_name }) => department_name);
+                return [...dptChoices].map(({ department_name }) => department_name);
             },
             name: 'department_name'
         }
     ]);
 
-    connection.query(`${statement} WHERE ?`,
-        selectedDepartment,
+    connection.query(`${statementAll} WHERE ?`,
+        selectedDpt,
         (err, res) => {
             console.log('\n');
             (err) ? console.log(err) : console.table(res);
@@ -124,10 +131,20 @@ const viewByDepartment = async () => {
 };
 
 const viewByManager = async () => {
-    const managerID = await inquirer.prompt(question.qnsViewByMan);
+    const managerChoices = await queryAsync(statementMgr);
+    const { manager } = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Select a manager: ',
+            choices() {
+                return [...managerChoices].map(({ id, manager }) => `${id} ${manager}`);
+            },
+            name: 'manager'
+        }
+    ]);
 
-    connection.query(`${statement} WHERE employee.?`,
-        managerID,
+    connection.query(`${statementAll} WHERE manager.?`,
+        { id: manager.split(' ')[0] },
         (err, res) => {
             console.log('\n');
             (err) ? console.log(err) : console.table(res);
@@ -269,13 +286,14 @@ const updateRole = async () => {
 }
 
 const updateManager = async () => {
-    const res = await queryAsync('SELECT id, first_name, last_name FROM employee');
+    const employeeData = await queryAsync('SELECT id, first_name, last_name FROM employee');
     const answer = await inquirer.prompt([
         {
             type: 'list',
             message: 'Select an employee to update: ',
             choices() {
-                return [...res].map(({ id, first_name, last_name }) => `${id} ${first_name} ${last_name}`);
+                return [...employeeData].map(({ id, first_name, last_name }) =>
+                    `${id} ${first_name} ${last_name}`);
             },
             name: 'employee'
         },
