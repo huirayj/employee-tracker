@@ -1,7 +1,7 @@
 # CLI Employee Management Tool
 
 ## Overview
-In this exercise, the user creates a set of tests for several classes and cards that provide information taken from the user prompt in a HTML document. 
+In this following exercise, the user sets up an SQL database and creates a CLI to manage the database. Functionalties include viewing all employees by various parameters and adding/removing/updating roles, departments, and employees.
 
 ## Pseudocode
 1. Create an SQL database, as well as seed data.
@@ -29,7 +29,7 @@ In this exercise, the user creates a set of tests for several classes and cards 
 ![team-profile-generator-demo](./assets/media/demo/employee-tracker-demo.gif)
 
 ## Screenshots
-### Adding Employee
-![Adding Employee](./assets/media/screenshots/employee-tracker-add-employee.png)
 ### Viewing All Employees
 ![Viewing All Employees](./assets/media/screenshots/employee-tracker-view-all-employees.png)
+### Adding Employee
+![Adding Employee](./assets/media/screenshots/employee-tracker-add-employee.png)
