@@ -155,7 +155,6 @@ const viewSalaryTotal = async () => {
     connection.query(`${statements.salaryTotal} WHERE department.?`,
         { id: department.id },
         (err, res) => {
-            console.log(res);
             console.log('\n');
             if (err) {
                 console.log(err);
