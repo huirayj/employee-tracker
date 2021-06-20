@@ -1,3 +1,4 @@
+// importing module dependecies
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const util = require('util');
@@ -5,6 +6,7 @@ const util = require('util');
 const questions = require('./assets/lib/questions');
 const statements = require('./assets/lib/sqlStatements');
 
+// establishes connection with the databse
 const connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
@@ -13,6 +15,7 @@ const connection = mysql.createConnection({
     database: 'employee_DB'
 });
 
+// returns responses in a promise object
 const queryAsync = util.promisify(connection.query).bind(connection);
 
 const init = async () => {
@@ -67,6 +70,7 @@ const init = async () => {
 };
 
 const viewDepartments = () => {
+    // executes a query for department names
     connection.query('SELECT department_name FROM department', (err, res) => {
         console.log('\n');
         (err) ? console.log(err) : console.table(res);
@@ -75,6 +79,7 @@ const viewDepartments = () => {
 };
 
 const viewRoles = () => {
+    // executes a query for roles
     connection.query('SELECT title FROM role', (err, res) => {
         console.log('\n');
         (err) ? console.log(err) : console.table(res);
@@ -83,6 +88,7 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
+    // executes a query for all employees
     connection.query(statements.all, (err, res) => {
         console.log('\n');
         (err) ? console.log(err) : console.table(res);
@@ -91,6 +97,7 @@ const viewEmployees = () => {
 };
 
 const viewByDepartment = async () => {
+    // executed query is converted into an array of  objects having name, value, and id properties
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
         .map(({ id, department_name }) =>
             ({ name: department_name, value: { name: department_name, id: id } }));
@@ -102,7 +109,7 @@ const viewByDepartment = async () => {
             name: 'department'
         }
     ]);
-
+    // executes a query that filters data by the selected department id
     connection.query(`${statements.all} WHERE department.?`,
         { id: department.id },
         (err, res) => {

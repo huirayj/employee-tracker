@@ -1,3 +1,4 @@
+// menu choices
 const choices = [
     {
         name: "View All Departments",
