@@ -101,6 +101,7 @@ const viewByDepartment = async () => {
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
         .map(({ id, department_name }) =>
             ({ name: department_name, value: { name: department_name, id: id } }));
+    // selected department is stored a variable via object destructuring assignemnt
     const { department } = await inquirer.prompt([
         {
             type: 'list',
@@ -166,6 +167,7 @@ const viewSalaryTotal = async () => {
             if (err) {
                 console.log(err);
             } else if (res.length) {
+                // filtered salary values are extracted via object destructuring and accumulated
                 const total = res.map(({ rest, salary }) => salary)
                     .reduce((acc, curr) => acc + curr);
                     
