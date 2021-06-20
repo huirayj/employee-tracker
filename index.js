@@ -2,8 +2,8 @@ const inquirer = require('inquirer');
 const mysql = require('mysql');
 const util = require('util');
 
-const questions = require('./lib/questions');
-const statements = require('./lib/sqlStatements');
+const questions = require('./assets/lib/questions');
+const statements = require('./assets/lib/sqlStatements');
 
 const connection = mysql.createConnection({
     host: 'localhost',
