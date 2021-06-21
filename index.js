@@ -160,7 +160,7 @@ const viewSalaryTotal = async () => {
             name: 'department'
         }
     ]);
-
+    // executes a query for all employee salaries and filters them by department.id
     connection.query(`${statements.salaryTotal} WHERE department.?`,
         { id: department.id },
         (err, res) => {
