@@ -97,7 +97,7 @@ const viewEmployees = () => {
 };
 
 const viewByDepartment = async () => {
-    // executed query is converted into an array of  objects having name, value, and id properties
+    // executed query over a department table is converted into an array of objects having name, value, and id properties
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
         .map(({ id, department_name }) =>
             ({ name: department_name, value: { name: department_name, id: id } }));
@@ -123,6 +123,7 @@ const viewByDepartment = async () => {
 };
 
 const viewByManager = async () => {
+    // executed query over a manager table is converted into an array of objects having name, value, and id properties
     const mgrChoices = (await queryAsync(statements.manager))
         .map(({ id, manager }) =>
             ({ name: manager, value: { name: manager, id: id } }));
@@ -136,7 +137,7 @@ const viewByManager = async () => {
     ]);
 
     console.log(manager);
-
+    // executes a query for all employees and filters by manager.id
     connection.query(`${statements.all} WHERE manager.?`,
         { id: manager.id },
         (err, res) => {
@@ -148,6 +149,7 @@ const viewByManager = async () => {
 };
 
 const viewSalaryTotal = async () => {
+    // executed query over a department table is converted into an array of objects having name, value, and id properties
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
         .map(({ id, department_name }) =>
             ({ name: department_name, value: { name: department_name, id: id } }));
@@ -170,7 +172,7 @@ const viewSalaryTotal = async () => {
                 // filtered salary values are extracted via object destructuring and accumulated
                 const total = res.map(({ rest, salary }) => salary)
                     .reduce((acc, curr) => acc + curr);
-                    
+
                 console.log(`Salary total of ${department.name}: $${total}`);
             } else {
                 console.log(`No employees found in ${department.name}`)
@@ -181,7 +183,7 @@ const viewSalaryTotal = async () => {
 
 const addDepartment = async () => {
     const newDpt = await inquirer.prompt(questions.qnsAddDpt);
-
+    // adds user created item to the db
     connection.query('INSERT INTO department SET ?',
         newDpt,
         (err, res) => {
@@ -192,9 +194,9 @@ const addDepartment = async () => {
 };
 
 const addRole = async () => {
+    // executed query over a department table is converted into an array of objects having name, value, and id properties
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
-        .map(({ id, department_name }) =>
-            ({ name: department_name, value: id }));
+        .map(({ id, department_name }) => ({ name: department_name, value: id }));
     const newRole = await inquirer.prompt([
         {
             type: 'input',
@@ -213,7 +215,7 @@ const addRole = async () => {
             name: 'department_id'
         }
     ]);
-
+    // adds user created item to the db
     connection.query('INSERT INTO role SET ?',
         newRole,
         (err, res) => {
@@ -224,8 +226,10 @@ const addRole = async () => {
 };
 
 const addEmployee = async () => {
+    // executed query over a role table is converted into an array of objects having name and value properties
     const roleChoices = (await queryAsync('SELECT id, title FROM role'))
         .map(({ id, title }) => ({ name: title, value: id }));
+    // executed query over a manager table is converted into an array of objects having name and value properties
     const mgrChoices = (await queryAsync(statements.manager))
         .map(({ id, manager }) => ({ name: manager, value: id }));
     const newEmp = await inquirer.prompt([
@@ -252,7 +256,7 @@ const addEmployee = async () => {
             name: 'manager_id'
         }
     ]);
-
+    // adds user created item to the db
     connection.query('INSERT INTO employee SET ?',
         newEmp,
         (err, res) => {
@@ -263,6 +267,7 @@ const addEmployee = async () => {
 };
 
 const removeDepartment = async () => {
+    // executed query over a department table is converted into an array of objects having name, value, and id properties
     const dptChoices = (await queryAsync('SELECT id, department_name FROM department'))
         .map(({ id, department_name }) =>
             ({ name: department_name, value: { name: department_name, id: id } }));
@@ -274,7 +279,7 @@ const removeDepartment = async () => {
             name: 'department'
         }
     ]);
-
+    // removes user selected item by department.id from the db
     connection.query(`DELETE FROM department WHERE ?`,
         { id: department.id },
         (err, res) => {
@@ -286,6 +291,7 @@ const removeDepartment = async () => {
 };
 
 const removeRole = async () => {
+    // executed query over a role table is converted into an array of objects having name, value, and id properties
     const roleChoices = (await queryAsync('SELECT title FROM role'))
         .map(({ title }) => title);
     const removedRole = await inquirer.prompt([
@@ -296,7 +302,7 @@ const removeRole = async () => {
             name: 'title'
         }
     ]);
-
+    // removes user selected item by role.id from the db
     connection.query(`DELETE FROM role WHERE ?`,
         removedRole,
         (err, res) => {
@@ -307,6 +313,7 @@ const removeRole = async () => {
 };
 
 const removeEmployee = async () => {
+    // executed query over employee table is converted into an array of objects having name, value, and id properties
     const empChoices = (await queryAsync('SELECT id, first_name, last_name FROM employee'))
         .map(({ id, first_name, last_name }) =>
         ({
@@ -321,7 +328,7 @@ const removeEmployee = async () => {
             name: 'employee'
         }
     ]);
-
+    // select an employee by their id and removes them
     connection.query('DELETE FROM employee WHERE ?',
         { id: employee.id },
         (err, res) => {
@@ -331,12 +338,14 @@ const removeEmployee = async () => {
 };
 
 const updateRole = async () => {
+    // executed query over employee table is converted into an array of objects having name, value, and id properties
     const empChoices = (await queryAsync('SELECT id, first_name, last_name FROM employee'))
         .map(({ id, first_name, last_name }) =>
         ({
             name: `${first_name} ${last_name}`,
             value: { name: `${first_name} ${last_name}`, id: id }
         }));
+    // executed query over a role table is converted into an array of objects having name, value, and id properties
     const roleChoices = (await queryAsync('SELECT id, title FROM role'))
         .map(({ id, title }) => ({ name: title, value: { name: title, id: id } }));
     const { employee, role } = await inquirer.prompt([
@@ -353,7 +362,7 @@ const updateRole = async () => {
             name: 'role'
         }
     ]);
-
+    // selects an employee by their id and updates their role
     connection.query('UPDATE employee SET ? WHERE ?',
         [
             { role_id: role.id },
@@ -368,6 +377,7 @@ const updateRole = async () => {
 };
 
 const updateManager = async () => {
+    // executed query over employee table is converted into an array of objects having name, value, and id properties
     const empChoices = (await queryAsync('SELECT id, first_name, last_name FROM employee'))
         .map(({ id, first_name, last_name }) =>
         ({
@@ -376,10 +386,7 @@ const updateManager = async () => {
         }));
     const mgrChoices = (await queryAsync(statements.manager))
         .map(({ id, manager }) =>
-        ({
-            name: manager,
-            value: { name: manager, id: id }
-        }));
+            ({ name: manager, value: { name: manager, id: id } }));
     const { employee, manager } = await inquirer.prompt([
         {
             type: 'list',
@@ -394,7 +401,7 @@ const updateManager = async () => {
             name: 'manager'
         }
     ]);
-
+    // selects an employee by their id and updates their manager
     connection.query('UPDATE employee SET ? WHERE ?',
         [
             { manager_id: manager.id },
