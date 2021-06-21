@@ -136,7 +136,6 @@ const viewByManager = async () => {
         }
     ]);
 
-    console.log(manager);
     // executes a query for all employees and filters by manager.id
     connection.query(`${statements.all} WHERE manager.?`,
         { id: manager.id },
